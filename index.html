@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Своя Игра – Панель администратора</title>
+    <style>
+        /* Базовые настройки и переменные тем */
+        :root {
+            --font-main: system-ui, -apple-system, sans-serif;
+            
+            /* Светлая тема (Light Mode) – элегантный металл */
+            --bg-page: #e2e8f0;
+            --bg-page-gradient: linear-gradient(145deg, #e6ecf2 0%, #caced3 100%);
+            --bg-pattern: repeating-linear-gradient(to bottom, transparent, transparent 20px, rgba(0, 0, 0, 0.4) 20px, rgba(0, 0, 0, 0.4) 24px);
+            --text-main: #1a1a1a;
+            --header-bg: linear-gradient(180deg, #2b323c 0%, #1b1e24 100%);
+            --header-border: #3a424e;
+            --header-text: #ffffff;
+            
+            /* Цвета команд – эффект анодированного металла */
+            --team1-bg: linear-gradient(160deg, #fdfbfb 0%, #ebedee 100%);
+            --team1-text: #1a1a1a;
+            --team1-border: #ffffff;
+            --team1-shadow: 0 12px 24px rgba(0,0,0,0.1), inset 1px 1px 2px #ffffff, inset -1px -1px 2px rgba(0,0,0,0.05);
+            
+            --team2-bg: linear-gradient(160deg, #2196f3 0%, #1565c0 100%);
+            --team2-text: #ffffff;
+            --team2-border: #4dabf5;
+            --team2-shadow: 0 12px 24px rgba(21,101,192,0.3), inset 1px 1px 2px rgba(255,255,255,0.4), inset -1px -1px 2px rgba(0,0,0,0.2);
+            
+            --team3-bg: linear-gradient(160deg, #f44336 0%, #c62828 100%);
+            --team3-text: #ffffff;
+            --team3-border: #f87067;
+            --team3-shadow: 0 12px 24px rgba(198,40,40,0.3), inset 1px 1px 2px rgba(255,255,255,0.4), inset -1px -1px 2px rgba(0,0,0,0.2);
+
+            --team4-bg: linear-gradient(160deg, #4caf50 0%, #2e7d32 100%);
+            --team4-text: #ffffff;
+            --team4-border: #80e27e;
+            --team4-shadow: 0 12px 24px rgba(46,125,50,0.3), inset 1px 1px 2px rgba(255,255,255,0.4), inset -1px -1px 2px rgba(0,0,0,0.2);
+            
+            --team5-bg: linear-gradient(160deg, #9c27b0 0%, #6a1b9a 100%);
+            --team5-text: #ffffff;
+            --team5-border: #d05ce3;
+            --team5-shadow: 0 12px 24px rgba(106,27,154,0.3), inset 1px 1px 2px rgba(255,255,255,0.4), inset -1px -1px 2px rgba(0,0,0,0.2);
+
+            /* Элементы управления – металлические кнопки */
+            --btn-metal-bg: linear-gradient(160deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 100%);
+            --btn-metal-border: rgba(255,255,255,0.4);
+            --btn-metal-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 1px 1px 1px rgba(255,255,255,0.5), inset -1px -1px 1px rgba(0,0,0,0.1);
+            --btn-metal-active-bg: linear-gradient(160deg, #4caf50 0%, #2e7d32 100%);
+            --btn-metal-active-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.2);
+            --btn-val-active-text: #ffffff;
+            
+            --btn-plus: #43a047;
+            --btn-minus: #e53935;
+        }
+
+        [data-theme="dark"] {
+            /* Темная тема (Dark Mode) – темный металл */
+            --bg-page: #121418;
+            --bg-page-gradient: linear-gradient(145deg, #1a1c23 0%, #111216 100%);
+            --bg-pattern: repeating-linear-gradient(to bottom, transparent, transparent 20px, rgba(255, 255, 255, 0.1) 20px, rgba(255, 255, 255, 0.1) 24px);
+            --text-main: #f8fafc;
+            --header-bg: linear-gradient(180deg, #1b1e24 0%, #0d0f12 100%);
+            --header-border: #2b323c;
+            
+            /* Адаптированный триколор – темный анодированный металл */
+            --team1-bg: linear-gradient(160deg, #2d3748 0%, #1a202c 100%);
+            --team1-text: #f8fafc;
+            --team1-border: #4a5568;
+            --team1-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.1), inset -1px -1px 2px rgba(0,0,0,0.4);
+            
+            --team2-bg: linear-gradient(160deg, #1976d2 0%, #0d47a1 100%);
+            --team2-text: #ffffff;
+            --team2-border: #2196f3;
+            --team2-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.4);
+            
+            --team3-bg: linear-gradient(160deg, #d32f2f 0%, #b71c1c 100%);
+            --team3-text: #ffffff;
+            --team3-border: #ef5350;
+            --team3-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.4);
+
+            --team4-bg: linear-gradient(160deg, #388e3c 0%, #1b5e20 100%);
+            --team4-text: #ffffff;
+            --team4-border: #4caf50;
+            --team4-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.4);
+            
+            --team5-bg: linear-gradient(160deg, #7b1fa2 0%, #4a148c 100%);
+            --team5-text: #ffffff;
+            --team5-border: #9c27b0;
+            --team5-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.4);
+
+            --btn-metal-bg: linear-gradient(160deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
+            --btn-metal-border: rgba(255,255,255,0.15);
+            --btn-metal-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 1px 1px 1px rgba(255,255,255,0.1), inset -1px -1px 1px rgba(0,0,0,0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            font-family: var(--font-main);
+            background: var(--bg-pattern), var(--bg-page-gradient);
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* SVG иконки инлайн */
+        .svg-defs {
+            display: none;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Шапка */
+        header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--header-border);
+            color: var(--header-text);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .header-titles h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .theme-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed rgba(255,255,255,0.4);
+            color: inherit;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.2rem;
+            width: 100%;
+            min-width: 320px;
+            font-family: var(--font-main);
+            transition: border-color 0.2s, opacity 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .theme-input:focus {
+            outline: none;
+            border-bottom: 1px solid #ffffff;
+            opacity: 1;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-btn, .theme-toggle {
+            background: linear-gradient(160deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 1px 1px 1px rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.8rem 1.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: var(--font-main);
+            transition: all 0.2s;
+        }
+
+        /* Фиксированная ширина для кнопок в шапке, чтобы их размер не менялся */
+        #stopwatchBtn {
+            min-width: 110px;
+            text-align: center;
+        }
+
+        #teamCountToggle {
+            min-width: 160px;
+            text-align: center;
+        }
+
+        .theme-toggle {
+            padding: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle .icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .header-btn:hover, .theme-toggle:hover {
+            background: linear-gradient(160deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+        }
+
+        .header-btn:active, .theme-toggle:active {
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3);
+            transform: translateY(1px);
+        }
+
+        /* Глобальный эффект синего неонового клика для всех кнопок */
+        button:active {
+            box-shadow: 0 0 15px 3px rgba(0, 150, 255, 0.8), inset 0 0 8px rgba(0, 150, 255, 0.5) !important;
+            border-color: #0096ff !important;
+            transition: box-shadow 0.05s, border-color 0.05s !important;
+        }
+
+        .header-btn.stopwatch-running {
+            box-shadow: 0 0 15px 3px rgba(0, 150, 255, 0.7), inset 0 0 8px rgba(0, 150, 255, 0.5);
+            border-color: #0096ff;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(0, 150, 255, 0.9);
+        }
+
+        .stopwatch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.3rem 0.3rem 0.3rem 1rem;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 1px 1px 4px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.1);
+        }
+
+        .stopwatch-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        /* Основной контейнер (Сетка команд) */
+        main {
+            flex: 1;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Mobile First: переключение на 3 колонки для планшетов и ПК */
+        @media (min-width: 1024px) {
+            main {
+                grid-template-columns: repeat(3, 1fr);
+                overflow-y: visible;
+            }
+            
+            /* Сетка для 5 команд */
+            main.grid-5 {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 1rem;
+            }
+            main.grid-5 .team-card {
+                padding: 1.2rem 1rem;
+            }
+            main.grid-5 .score-display {
+                font-size: 3.5rem;
+                margin-bottom: 1.5rem;
+            }
+            main.grid-5 .values-grid {
+                gap: 6px;
+            }
+            main.grid-5 .values-grid button {
+                font-size: 1.1rem;
+                padding: 0.6rem 0;
+            }
+            main.grid-5 .btn-action {
+                padding: 0.8rem;
+                font-size: 1.5rem;
+            }
+            main.grid-5 .team-name {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+            main.grid-5 .btn-reset-action {
+                padding: 0.8rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Карточка команды (Анодированный металлический лист) */
+        .team-card {
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, background 0.3s, border-color 0.3s;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card.team-1 {
+            background: var(--team1-bg); color: var(--team1-text);
+            border-color: var(--team1-border); box-shadow: var(--team1-shadow);
+        }
+        .team-card.team-2 {
+            background: var(--team2-bg); color: var(--team2-text);
+            border-color: var(--team2-border); box-shadow: var(--team2-shadow);
+        }
+        .team-card.team-3 {
+            background: var(--team3-bg); color: var(--team3-text);
+            border-color: var(--team3-border); box-shadow: var(--team3-shadow);
+        }
+        .team-card.team-4 {
+            background: var(--team4-bg); color: var(--team4-text);
+            border-color: var(--team4-border); box-shadow: var(--team4-shadow);
+        }
+        .team-card.team-5 {
+            background: var(--team5-bg); color: var(--team5-text);
+            border-color: var(--team5-border); box-shadow: var(--team5-shadow);
+        }
+
+        /* Поле для названия команды (в две строки) */
+        .team-name {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            color: inherit;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-family: var(--font-main);
+            transition: border-color 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            resize: none; /* запрет на ручное изменение размера */
+            overflow: hidden; /* скрытие полосы прокрутки */
+            line-height: 1.2;
+        }
+
+        .team-name:focus {
+            outline: none;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        /* Подчеркивание для 1-й команды на белом фоне */
+        [data-theme="light"] .team-1 .team-name {
+            border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+            text-shadow: none;
+        }
+
+        [data-theme="light"] .team-1 .team-name:focus {
+            border-bottom: 2px solid #000000;
+        }
+
+        /* Табло счета (Вдавленный эффект) */
+        .score-display {
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.1s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 -1px 1px rgba(255,255,255,0.2);
+        }
+
+        [data-theme="light"] .team-1 .score-display {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15), 0 -1px 1px #ffffff;
+        }
+
+        .score-display.pulse-up { animation: pulseUp 0.3s ease-out; }
+        .score-display.pulse-down { animation: pulseDown 0.3s ease-out; }
+
+        @keyframes pulseUp {
+            0% { transform: scale(1); color: var(--btn-plus); }
+            50% { transform: scale(1.1); color: var(--btn-plus); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulseDown {
+            0% { transform: scale(1); color: var(--btn-minus); }
+            50% { transform: scale(0.9); color: var(--btn-minus); }
+            100% { transform: scale(1); }
+        }
+
+        /* Калькулятор: номиналы баллов */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .values-grid button {
+            background: var(--btn-metal-bg);
+            color: inherit;
+            border: 1px solid var(--btn-metal-border);
+            border-radius: 12px;
+            padding: 1rem 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--btn-metal-shadow);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        [data-theme="light"] .team-1 .values-grid button {
+            background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 1px 1px 1px #ffffff, inset -1px -1px 1px rgba(0,0,0,0.1);
+            text-shadow: none;
+        }
+
+        .values-grid button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .values-grid button:active {
+            transform: translateY(1px);
+            box-shadow: var(--btn-metal-active-shadow);
+        }
+
+        .values-grid button.selected {
+            background: var(--btn-metal-active-bg);
+            color: var(--btn-val-active-text);
+            border-color: transparent;
+            box-shadow: var(--btn-metal-active-shadow);
+            transform: translateY(2px);
+            text-shadow: none;
+        }
+
+        /* Кнопки действий (+, -) */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-action {
+            border-radius: 16px;
+            padding: 1.2rem;
+            font-size: 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .btn-action .icon {
+            width: 48px;
+            height: 48px;
+            stroke: currentColor;
+            stroke-width: 2px;
+        }
+
+        .btn-minus-action, .btn-plus-action {
+            background: linear-gradient(160deg, #ffffff 0%, #e2e8f0 100%);
+            color: #000000;
+            border: 2px solid #ffffff;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2), inset 1px 1px 2px #ffffff, inset -1px -1px 2px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="light"] .team-1 .btn-minus-action,
+        [data-theme="light"] .team-1 .btn-plus-action {
+            border-color: #000000;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.25), inset 1px 1px 2px #ffffff, inset -1px -1px 2px rgba(0,0,0,0.1);
+        }
+
+        .btn-action:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-minus-action:disabled, .btn-plus-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Кнопка сброса */
+        .btn-reset-action {
+            width: 100%;
+            background: var(--btn-metal-bg);
+            color: inherit;
+            border: 2px solid #ffffff;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: var(--btn-metal-shadow);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .btn-reset-action:hover {
+            background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%);
+        }
+
+        .btn-reset-action:active {
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* --- Режим экрана участников (Presentation Mode) --- */
+        body.presentation-mode main {
+            padding: 0;
+            gap: 0;
+        }
+
+        body.presentation-mode .team-card {
+            border-radius: 0;
+            justify-content: center;
+            border: none;
+            box-shadow: none;
+            min-width: 0; /* предотвращает разрыв сетки при длинном тексте */
+        }
+
+        body.presentation-mode .team-name {
+            font-size: 5vw; /* адаптивный размер под ширину экрана */
+            border-bottom: none !important;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            pointer-events: none; /* запрет редактирования в режиме показа */
+        }
+
+        [data-theme="light"] body.presentation-mode .team-1 .team-name {
+            text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        body.presentation-mode .score-display {
+            font-size: 11vw; /* адаптивный размер баллов */
+            margin-bottom: 0;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            white-space: nowrap; /* баллы строго в одну строку */
+        }
+
+        [data-theme="light"] body.presentation-mode .team-1 .score-display {
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        body.presentation-mode .values-grid,
+        body.presentation-mode .action-grid,
+        body.presentation-mode .btn-reset-action {
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            body.presentation-mode main.grid-5 .team-name {
+                font-size: 3vw;
+            }
+            body.presentation-mode main.grid-5 .score-display {
+                font-size: 7vw;
+            }
+        }
+
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Inline SVG Library -->
+    <svg class="svg-defs">
+        <defs>
+            <symbol id="icon-sun" viewBox="0 0 24 24">
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z"/>
+            </symbol>
+            <symbol id="icon-moon" viewBox="0 0 24 24">
+                <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+            </symbol>
+            <symbol id="icon-plus" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </symbol>
+            <symbol id="icon-minus" viewBox="0 0 24 24">
+                <path d="M19 13H5v-2h14v2z"/>
+            </symbol>
+            <symbol id="icon-reset" viewBox="0 0 24 24">
+                <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
+            </symbol>
+            <symbol id="icon-screen" viewBox="0 0 24 24">
+                <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <header>
+        <div class="header-titles">
+            <h1>Своя игра</h1>
+            <input type="text" class="theme-input" value="Тема: служение Отечеству: Герои России" aria-label="редактируемая тема игры">
+        </div>
+        <div class="header-controls">
+            <div class="stopwatch-container">
+                <span id="stopwatchDisplay" class="stopwatch-display">00:00</span>
+                <button id="stopwatchBtn" class="header-btn" onclick="toggleStopwatch()">Старт</button>
+            </div>
+            <button id="teamCountToggle" class="header-btn" aria-label="изменить количество команд">5 команд</button>
+            <button class="theme-toggle" id="presentationToggle" aria-label="режим участников">
+                <svg class="icon"><use href="#icon-screen"></use></svg>
+            </button>
+            <button class="theme-toggle" id="themeToggle" aria-label="переключить тему">
+                <svg class="icon"><use id="themeIcon" href="#icon-moon"></use></svg>
+            </button>
+        </div>
+    </header>
+
+    <main id="dashboard">
+        <!-- Команды будут сгенерированы через JavaScript -->
+    </main>
+
+    <script>
+        // Состояние приложения
+        const state = {
+            theme: 'light',
+            activeTeams: 3,
+            teams: [
+                { id: 1, name: 'Команда\nБелых', score: 0, selectedValue: null, colorClass: 'team-1' },
+                { id: 2, name: 'Команда\nСиних', score: 0, selectedValue: null, colorClass: 'team-2' },
+                { id: 3, name: 'Команда\nКрасных', score: 0, selectedValue: null, colorClass: 'team-3' },
+                { id: 4, name: 'Команда\nЗеленых', score: 0, selectedValue: null, colorClass: 'team-4' },
+                { id: 5, name: 'Команда\nФиолетовых', score: 0, selectedValue: null, colorClass: 'team-5' }
+            ],
+            values: [50, 200, 400, 600, 800, 1000],
+            stopwatch: {
+                status: 'reset', // состояния: reset, running, stopped
+                startTime: 0,
+                elapsedTime: 0,
+                intervalId: null
+            }
+        };
+
+        // Аудиосистема (Web Audio API для генерации звуков без внешних файлов)
+        let audioCtx = null;
+        
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playTone(type, freq1, freq2, duration, vol) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq1, audioCtx.currentTime);
+            if (freq2) osc.frequency.exponentialRampToValueAtTime(freq2, audioCtx.currentTime + duration);
+            
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        const sounds = {
+            click: () => playTone('sine', 800, null, 0.05, 0.05),
+            positive: () => {
+                playTone('sine', 523.25, null, 0.1, 0.1);
+                setTimeout(() => playTone('sine', 783.99, null, 0.2, 0.1), 100);
+            },
+            negative: () => playTone('triangle', 300, 200, 0.3, 0.1)
+        };
+
+        // DOM элементы
+        const dashboard = document.getElementById('dashboard');
+        const themeToggle = document.getElementById('themeToggle');
+        const presentationToggle = document.getElementById('presentationToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const teamCountToggle = document.getElementById('teamCountToggle');
+        const body = document.body;
+
+        // Инициализация
+        function init() {
+            renderDashboard();
+            setupThemeToggle();
+            setupPresentationToggle();
+            setupTeamCountToggle();
+            window.addEventListener('resize', () => requestAnimationFrame(adjustPresentationFonts));
+        }
+
+        // Рендер всех карточек команд
+        function renderDashboard() {
+            dashboard.innerHTML = '';
+            
+            // Устанавливаем класс сетки в зависимости от количества команд
+            if (state.activeTeams === 5) {
+                dashboard.classList.add('grid-5');
+            } else {
+                dashboard.classList.remove('grid-5');
+            }
+
+            // Отрисовываем только активные команды
+            const visibleTeams = state.teams.slice(0, state.activeTeams);
+
+            visibleTeams.forEach(team => {
+                const card = document.createElement('div');
+                card.className = `team-card ${team.colorClass}`;
+                card.id = `team-card-${team.id}`;
+                
+                // Генерация кнопок с номиналами
+                const valuesHtml = state.values.map(val => 
+                    `<button class="${team.selectedValue === val ? 'selected' : ''}" 
+                             onclick="selectValue(${team.id}, ${val})">${val}</button>`
+                ).join('');
+
+                card.innerHTML = `
+                    <textarea class="team-name" rows="2" oninput="updateTeamName(${team.id}, this.value)" aria-label="название команды">${team.name}</textarea>
+                    <div class="score-display" id="score-${team.id}">${team.score}</div>
+                    
+                    <div class="values-grid" id="values-${team.id}">
+                        ${valuesHtml}
+                    </div>
+
+                    <div class="action-grid">
+                        <button class="btn-action btn-minus-action" onclick="changeScore(${team.id}, false)" ${!team.selectedValue ? 'disabled' : ''} aria-label="отнять баллы">
+                            <svg class="icon"><use href="#icon-minus"></use></svg>
+                        </button>
+                        <button class="btn-action btn-plus-action" onclick="changeScore(${team.id}, true)" ${!team.selectedValue ? 'disabled' : ''} aria-label="добавить баллы">
+                            <svg class="icon"><use href="#icon-plus"></use></svg>
+                        </button>
+                    </div>
+
+                    <button class="btn-reset-action" onclick="resetScore(${team.id})">
+                        <svg class="icon" style="width: 18px; height: 18px;"><use href="#icon-reset"></use></svg>
+                        Обнулить баллы
+                    </button>
+                `;
+                dashboard.appendChild(card);
+            });
+
+            // Запускаем пересчет шрифтов после отрисовки
+            requestAnimationFrame(() => adjustPresentationFonts());
+        }
+
+        // Логика: выбор номинала
+        window.selectValue = function(teamId, value) {
+            sounds.click();
+            const team = state.teams.find(t => t.id === teamId);
+            // Если кликнули на уже выбранный номинал – снимаем выделение, иначе – выбираем
+            team.selectedValue = team.selectedValue === value ? null : value;
+            
+            // Точечное обновление интерфейса конкретной карточки
+            updateCardUI(teamId);
+        };
+
+        // Логика: изменение счета (+ / -)
+        window.changeScore = function(teamId, isAdding) {
+            const team = state.teams.find(t => t.id === teamId);
+            if (!team.selectedValue) return;
+
+            if (isAdding) {
+                sounds.positive();
+            } else {
+                sounds.negative();
+            }
+
+            const scoreElement = document.getElementById(`score-${teamId}`);
+            
+            // Анимация
+            scoreElement.classList.remove('pulse-up', 'pulse-down');
+            void scoreElement.offsetWidth; // Триггер рефлоу для перезапуска анимации
+            scoreElement.classList.add(isAdding ? 'pulse-up' : 'pulse-down');
+
+            // Изменение значения
+            if (isAdding) {
+                team.score += team.selectedValue;
+            } else {
+                team.score -= team.selectedValue;
+            }
+
+            // Сброс выбранного номинала после действия
+            team.selectedValue = null;
+            
+            updateCardUI(teamId);
+            requestAnimationFrame(() => adjustPresentationFonts());
+        };
+
+        // Логика: обнуление баллов
+        window.resetScore = function(teamId) {
+            sounds.negative();
+            const team = state.teams.find(t => t.id === teamId);
+            team.score = 0;
+            team.selectedValue = null;
+            updateCardUI(teamId);
+            requestAnimationFrame(() => adjustPresentationFonts());
+        };
+
+        // Обновление имени (чтобы сохранялось при перерисовках)
+        window.updateTeamName = function(teamId, newName) {
+            const team = state.teams.find(t => t.id === teamId);
+            team.name = newName;
+            requestAnimationFrame(() => adjustPresentationFonts());
+        };
+
+        // Логика секундомера
+        window.toggleStopwatch = function() {
+            sounds.click();
+            const display = document.getElementById('stopwatchDisplay');
+            const btn = document.getElementById('stopwatchBtn');
+
+            if (state.stopwatch.status === 'reset') {
+                state.stopwatch.status = 'running';
+                state.stopwatch.startTime = Date.now() - state.stopwatch.elapsedTime;
+                state.stopwatch.intervalId = setInterval(updateStopwatch, 100);
+                btn.innerText = 'Стоп';
+                btn.classList.add('stopwatch-running');
+            } else if (state.stopwatch.status === 'running') {
+                state.stopwatch.status = 'stopped';
+                clearInterval(state.stopwatch.intervalId);
+                btn.innerText = 'Сброс';
+                btn.classList.remove('stopwatch-running');
+            } else if (state.stopwatch.status === 'stopped') {
+                state.stopwatch.status = 'reset';
+                state.stopwatch.elapsedTime = 0;
+                display.innerText = '00:00';
+                btn.innerText = 'Старт';
+                btn.classList.remove('stopwatch-running');
+            }
+        };
+
+        function updateStopwatch() {
+            state.stopwatch.elapsedTime = Date.now() - state.stopwatch.startTime;
+            let totalSeconds = Math.floor(state.stopwatch.elapsedTime / 1000);
+            let m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            let s = (totalSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('stopwatchDisplay').innerText = `${m}:${s}`;
+        }
+
+        // Точечное обновление UI без полной перерисовки инпутов (чтобы не терять фокус)
+        function updateCardUI(teamId) {
+            const team = state.teams.find(t => t.id === teamId);
+            const card = document.getElementById(`team-card-${teamId}`);
+            
+            // Обновляем счет
+            document.getElementById(`score-${teamId}`).innerText = team.score;
+            
+            // Обновляем сетку номиналов
+            const valuesGrid = document.getElementById(`values-${teamId}`);
+            valuesGrid.innerHTML = state.values.map(val => 
+                `<button class="${team.selectedValue === val ? 'selected' : ''}" 
+                         onclick="selectValue(${team.id}, ${val})">${val}</button>`
+            ).join('');
+
+            // Обновляем доступность кнопок +/-
+            const minusBtn = card.querySelector('.btn-minus-action');
+            const plusBtn = card.querySelector('.btn-plus-action');
+            
+            if (team.selectedValue) {
+                minusBtn.removeAttribute('disabled');
+                plusBtn.removeAttribute('disabled');
+            } else {
+                minusBtn.setAttribute('disabled', 'true');
+                plusBtn.setAttribute('disabled', 'true');
+            }
+        }
+
+        // Переключение темы
+        function setupThemeToggle() {
+            themeToggle.addEventListener('click', () => {
+                sounds.click();
+                if (state.theme === 'light') {
+                    state.theme = 'dark';
+                    body.setAttribute('data-theme', 'dark');
+                    themeIcon.setAttribute('href', '#icon-sun');
+                } else {
+                    state.theme = 'light';
+                    body.setAttribute('data-theme', 'light');
+                    themeIcon.setAttribute('href', '#icon-moon');
+                }
+            });
+        }
+
+        // Переключение режима презентации
+        function setupPresentationToggle() {
+            presentationToggle.addEventListener('click', () => {
+                sounds.click();
+                body.classList.toggle('presentation-mode');
+                requestAnimationFrame(() => adjustPresentationFonts());
+            });
+        }
+
+        // Переключение количества команд (3 или 5)
+        function setupTeamCountToggle() {
+            teamCountToggle.addEventListener('click', () => {
+                sounds.click();
+                if (state.activeTeams === 3) {
+                    state.activeTeams = 5;
+                    teamCountToggle.innerText = '3 команды';
+                } else {
+                    state.activeTeams = 3;
+                    teamCountToggle.innerText = '5 команд';
+                }
+                renderDashboard();
+            });
+        }
+
+        // Функция для динамической синхронизации размеров шрифтов
+        function adjustPresentationFonts() {
+            const names = document.querySelectorAll('.team-name');
+            const scores = document.querySelectorAll('.score-display');
+            
+            // Если не в режиме презентации, очищаем инлайн-стили
+            if (!document.body.classList.contains('presentation-mode')) {
+                names.forEach(el => el.style.fontSize = '');
+                scores.forEach(el => el.style.fontSize = '');
+                return;
+            }
+
+            const firstCard = document.querySelector('.team-card');
+            if (!firstCard) return;
+
+            const computedStyle = window.getComputedStyle(firstCard);
+            const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+            const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+            // Доступная ширина (с запасом в 5% для отступов)
+            const availableWidth = (firstCard.clientWidth - paddingLeft - paddingRight) * 0.95;
+
+            if (availableWidth <= 0) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // --- Расчет для названий команд ---
+            let minNameRatio = Infinity;
+            const baseNameSize = 100; // Базовый размер для измерения ширины
+            ctx.font = `700 ${baseNameSize}px system-ui, -apple-system, sans-serif`;
+
+            state.teams.slice(0, state.activeTeams).forEach(team => {
+                const lines = team.name.split('\n');
+                let maxLineWidth = 0;
+                lines.forEach(line => {
+                    const width = ctx.measureText(line).width;
+                    if (width > maxLineWidth) maxLineWidth = width;
+                });
+                if (maxLineWidth > 0) {
+                    const ratio = availableWidth / maxLineWidth;
+                    if (ratio < minNameRatio) minNameRatio = ratio;
+                }
+            });
+
+            // --- Расчет для баллов ---
+            let minScoreRatio = Infinity;
+            const baseScoreSize = 100;
+            ctx.font = `900 ${baseScoreSize}px system-ui, -apple-system, sans-serif`;
+
+            state.teams.slice(0, state.activeTeams).forEach(team => {
+                const text = team.score.toString();
+                const width = ctx.measureText(text).width;
+                if (width > 0) {
+                    const ratio = availableWidth / width;
+                    if (ratio < minScoreRatio) minScoreRatio = ratio;
+                }
+            });
+
+            // Ограничения максимального размера в зависимости от количества команд
+            const maxNameVW = state.activeTeams === 3 ? 5.5 : 3.5;
+            const maxScoreVW = state.activeTeams === 3 ? 12 : 8;
+            
+            const maxNamePx = window.innerWidth * (maxNameVW / 100);
+            const maxScorePx = window.innerWidth * (maxScoreVW / 100);
+
+            let finalNameSize = baseNameSize * minNameRatio;
+            let finalScoreSize = baseScoreSize * minScoreRatio;
+
+            // Применяем лимиты, чтобы шрифты не становились слишком гигантскими при коротком тексте
+            if (!isFinite(finalNameSize) || finalNameSize > maxNamePx) finalNameSize = maxNamePx;
+            if (!isFinite(finalScoreSize) || finalScoreSize > maxScorePx) finalScoreSize = maxScorePx;
+
+            names.forEach(name => name.style.fontSize = `${finalNameSize}px`);
+            scores.forEach(score => score.style.fontSize = `${finalScoreSize}px`);
+        }
+
+        // Запуск
+        init();
+    </script>
+</body>
+</html>
