@@ -187,7 +187,7 @@
             transition: all 0.2s;
         }
 
-        /* Фиксированная ширина для кнопок в шапке, чтобы их размер не менялся */
+        /* Фиксированная ширина для кнопок в шапке */
         #stopwatchBtn {
             min-width: 110px;
             text-align: center;
@@ -260,18 +260,18 @@
             padding: 2rem;
             display: grid;
             grid-template-columns: 1fr;
+            grid-auto-rows: minmax(min-content, 1fr); /* Защита от сплющивания */
             gap: 2rem;
             overflow-y: auto;
+            min-height: 0;
         }
 
-        /* Mobile First: переключение на 3 колонки для планшетов и ПК */
+        /* Переключение на 3/5 колонок для планшетов и ПК */
         @media (min-width: 1024px) {
             main {
                 grid-template-columns: repeat(3, 1fr);
                 overflow-y: visible;
             }
-            
-            /* Сетка для 5 команд */
             main.grid-5 {
                 grid-template-columns: repeat(5, 1fr);
                 gap: 1rem;
@@ -304,7 +304,7 @@
             }
         }
 
-        /* Карточка команды (Анодированный металлический лист) */
+        /* Карточка команды */
         .team-card {
             border-radius: 20px;
             padding: 2rem;
@@ -314,7 +314,8 @@
             transition: transform 0.2s, background 0.3s, border-color 0.3s;
             border: 1px solid transparent;
             position: relative;
-            overflow: hidden;
+            min-height: min-content; /* Защита от сплющивания */
+            overflow: hidden; 
         }
 
         .team-card.team-1 {
@@ -353,8 +354,8 @@
             font-family: var(--font-main);
             transition: border-color 0.2s;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            resize: none; /* запрет на ручное изменение размера */
-            overflow: hidden; /* скрытие полосы прокрутки */
+            resize: none; 
+            overflow: hidden; 
             line-height: 1.2;
         }
 
@@ -373,7 +374,7 @@
             border-bottom: 2px solid #000000;
         }
 
-        /* Табло счета (Вдавленный эффект) */
+        /* Табло счета */
         .score-display {
             font-size: 5rem;
             font-weight: 900;
@@ -539,24 +540,35 @@
 
         /* --- Режим экрана участников (Presentation Mode) --- */
         body.presentation-mode main {
-            padding: 0;
-            gap: 0;
+            padding: 0 !important;
+            gap: 0 !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-rows: 1fr !important;
+            grid-auto-rows: unset !important;
+            overflow: hidden !important;
+        }
+        
+        body.presentation-mode main.grid-5 {
+            grid-template-columns: repeat(5, 1fr) !important;
         }
 
         body.presentation-mode .team-card {
             border-radius: 0;
             justify-content: center;
+            align-items: center;
             border: none;
             box-shadow: none;
-            min-width: 0; /* предотвращает разрыв сетки при длинном тексте */
+            min-width: 0; 
+            min-height: 0; 
+            padding: 5% !important; 
         }
 
         body.presentation-mode .team-name {
-            font-size: 5vw; /* адаптивный размер под ширину экрана */
             border-bottom: none !important;
-            margin-bottom: 2rem;
+            margin-bottom: 2vh;
             text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-            pointer-events: none; /* запрет редактирования в режиме показа */
+            pointer-events: none; 
+            height: 2.4em; 
         }
 
         [data-theme="light"] body.presentation-mode .team-1 .team-name {
@@ -564,10 +576,9 @@
         }
 
         body.presentation-mode .score-display {
-            font-size: 11vw; /* адаптивный размер баллов */
             margin-bottom: 0;
             text-shadow: 0 4px 10px rgba(0,0,0,0.6);
-            white-space: nowrap; /* баллы строго в одну строку */
+            white-space: nowrap; 
         }
 
         [data-theme="light"] body.presentation-mode .team-1 .score-display {
@@ -578,15 +589,6 @@
         body.presentation-mode .action-grid,
         body.presentation-mode .btn-reset-action {
             display: none;
-        }
-
-        @media (min-width: 1024px) {
-            body.presentation-mode main.grid-5 .team-name {
-                font-size: 3vw;
-            }
-            body.presentation-mode main.grid-5 .score-display {
-                font-size: 7vw;
-            }
         }
 
     </style>
@@ -655,14 +657,14 @@
             ],
             values: [50, 200, 400, 600, 800, 1000],
             stopwatch: {
-                status: 'reset', // состояния: reset, running, stopped
+                status: 'reset', 
                 startTime: 0,
                 elapsedTime: 0,
                 intervalId: null
             }
         };
 
-        // Аудиосистема (Web Audio API для генерации звуков без внешних файлов)
+        // Аудиосистема
         let audioCtx = null;
         
         function initAudio() {
@@ -717,14 +719,12 @@
         function renderDashboard() {
             dashboard.innerHTML = '';
             
-            // Устанавливаем класс сетки в зависимости от количества команд
             if (state.activeTeams === 5) {
                 dashboard.classList.add('grid-5');
             } else {
                 dashboard.classList.remove('grid-5');
             }
 
-            // Отрисовываем только активные команды
             const visibleTeams = state.teams.slice(0, state.activeTeams);
 
             visibleTeams.forEach(team => {
@@ -732,7 +732,6 @@
                 card.className = `team-card ${team.colorClass}`;
                 card.id = `team-card-${team.id}`;
                 
-                // Генерация кнопок с номиналами
                 const valuesHtml = state.values.map(val => 
                     `<button class="${team.selectedValue === val ? 'selected' : ''}" 
                              onclick="selectValue(${team.id}, ${val})">${val}</button>`
@@ -763,7 +762,6 @@
                 dashboard.appendChild(card);
             });
 
-            // Запускаем пересчет шрифтов после отрисовки
             requestAnimationFrame(() => adjustPresentationFonts());
         }
 
@@ -771,10 +769,8 @@
         window.selectValue = function(teamId, value) {
             sounds.click();
             const team = state.teams.find(t => t.id === teamId);
-            // Если кликнули на уже выбранный номинал – снимаем выделение, иначе – выбираем
             team.selectedValue = team.selectedValue === value ? null : value;
             
-            // Точечное обновление интерфейса конкретной карточки
             updateCardUI(teamId);
         };
 
@@ -791,19 +787,16 @@
 
             const scoreElement = document.getElementById(`score-${teamId}`);
             
-            // Анимация
             scoreElement.classList.remove('pulse-up', 'pulse-down');
-            void scoreElement.offsetWidth; // Триггер рефлоу для перезапуска анимации
+            void scoreElement.offsetWidth; 
             scoreElement.classList.add(isAdding ? 'pulse-up' : 'pulse-down');
 
-            // Изменение значения
             if (isAdding) {
                 team.score += team.selectedValue;
             } else {
                 team.score -= team.selectedValue;
             }
 
-            // Сброс выбранного номинала после действия
             team.selectedValue = null;
             
             updateCardUI(teamId);
@@ -820,7 +813,7 @@
             requestAnimationFrame(() => adjustPresentationFonts());
         };
 
-        // Обновление имени (чтобы сохранялось при перерисовках)
+        // Обновление имени 
         window.updateTeamName = function(teamId, newName) {
             const team = state.teams.find(t => t.id === teamId);
             team.name = newName;
@@ -861,22 +854,19 @@
             document.getElementById('stopwatchDisplay').innerText = `${m}:${s}`;
         }
 
-        // Точечное обновление UI без полной перерисовки инпутов (чтобы не терять фокус)
+        // Точечное обновление UI
         function updateCardUI(teamId) {
             const team = state.teams.find(t => t.id === teamId);
             const card = document.getElementById(`team-card-${teamId}`);
             
-            // Обновляем счет
             document.getElementById(`score-${teamId}`).innerText = team.score;
             
-            // Обновляем сетку номиналов
             const valuesGrid = document.getElementById(`values-${teamId}`);
             valuesGrid.innerHTML = state.values.map(val => 
                 `<button class="${team.selectedValue === val ? 'selected' : ''}" 
                          onclick="selectValue(${team.id}, ${val})">${val}</button>`
             ).join('');
 
-            // Обновляем доступность кнопок +/-
             const minusBtn = card.querySelector('.btn-minus-action');
             const plusBtn = card.querySelector('.btn-plus-action');
             
@@ -914,7 +904,7 @@
             });
         }
 
-        // Переключение количества команд (3 или 5)
+        // Переключение количества команд
         function setupTeamCountToggle() {
             teamCountToggle.addEventListener('click', () => {
                 sounds.click();
@@ -929,12 +919,11 @@
             });
         }
 
-        // Функция для динамической синхронизации размеров шрифтов
+        // Динамическая синхронизация размеров шрифтов (с учетом высоты и ширины)
         function adjustPresentationFonts() {
             const names = document.querySelectorAll('.team-name');
             const scores = document.querySelectorAll('.score-display');
             
-            // Если не в режиме презентации, очищаем инлайн-стили
             if (!document.body.classList.contains('presentation-mode')) {
                 names.forEach(el => el.style.fontSize = '');
                 scores.forEach(el => el.style.fontSize = '');
@@ -947,30 +936,32 @@
             const computedStyle = window.getComputedStyle(firstCard);
             const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
             const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
-            // Доступная ширина (с запасом в 5% для отступов)
+            const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+            const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+            
+            // Доступная ширина и высота с небольшим запасом (5%)
             const availableWidth = (firstCard.clientWidth - paddingLeft - paddingRight) * 0.95;
+            const availableHeight = (firstCard.clientHeight - paddingTop - paddingBottom) * 0.95;
 
-            if (availableWidth <= 0) return;
+            if (availableWidth <= 0 || availableHeight <= 0) return;
 
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
             // --- Расчет для названий команд ---
             let minNameRatio = Infinity;
-            const baseNameSize = 100; // Базовый размер для измерения ширины
+            const baseNameSize = 100;
             ctx.font = `700 ${baseNameSize}px system-ui, -apple-system, sans-serif`;
 
             state.teams.slice(0, state.activeTeams).forEach(team => {
                 const lines = team.name.split('\n');
-                let maxLineWidth = 0;
                 lines.forEach(line => {
                     const width = ctx.measureText(line).width;
-                    if (width > maxLineWidth) maxLineWidth = width;
+                    if (width > 0) {
+                        const ratio = availableWidth / width;
+                        if (ratio < minNameRatio) minNameRatio = ratio;
+                    }
                 });
-                if (maxLineWidth > 0) {
-                    const ratio = availableWidth / maxLineWidth;
-                    if (ratio < minNameRatio) minNameRatio = ratio;
-                }
             });
 
             // --- Расчет для баллов ---
@@ -987,19 +978,24 @@
                 }
             });
 
-            // Ограничения максимального размера в зависимости от количества команд
-            const maxNameVW = state.activeTeams === 3 ? 5.5 : 3.5;
-            const maxScoreVW = state.activeTeams === 3 ? 12 : 8;
-            
-            const maxNamePx = window.innerWidth * (maxNameVW / 100);
-            const maxScorePx = window.innerWidth * (maxScoreVW / 100);
-
             let finalNameSize = baseNameSize * minNameRatio;
             let finalScoreSize = baseScoreSize * minScoreRatio;
 
-            // Применяем лимиты, чтобы шрифты не становились слишком гигантскими при коротком тексте
+            // Защита от излишнего увеличения на очень широких экранах
+            const maxNamePx = availableWidth * 0.4; 
+            const maxScorePx = availableWidth * 0.8;
+
             if (!isFinite(finalNameSize) || finalNameSize > maxNamePx) finalNameSize = maxNamePx;
             if (!isFinite(finalScoreSize) || finalScoreSize > maxScorePx) finalScoreSize = maxScorePx;
+
+            // Проверка по высоте: суммарная высота названия (2 строки) + баллы + отступ не должна превышать высоту карточки
+            const estimatedHeight = (finalNameSize * 1.2 * 2) + finalScoreSize + (availableHeight * 0.1); 
+            
+            if (estimatedHeight > availableHeight) {
+                const scale = availableHeight / estimatedHeight;
+                finalNameSize *= scale;
+                finalScoreSize *= scale;
+            }
 
             names.forEach(name => name.style.fontSize = `${finalNameSize}px`);
             scores.forEach(score => score.style.fontSize = `${finalScoreSize}px`);
