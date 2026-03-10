@@ -442,6 +442,9 @@
                 padding: 2rem;
                 gap: 2rem;
                 overflow-y: auto; /* Скроллится только зона с командами */
+                max-width: 1400px;
+                margin: 0 auto;
+                width: 100%;
             }
             
             main.grid-5 {
@@ -517,9 +520,6 @@
             text-shadow: 0 2px 6px rgba(0,0,0,0.5);
             pointer-events: none; 
             padding: 0 !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         [data-theme="light"] body.presentation-mode .team-1 .team-name { text-shadow: 0 2px 6px rgba(0,0,0,0.2); }
@@ -544,6 +544,8 @@
                 grid-template-columns: repeat(3, 1fr) !important;
                 grid-template-rows: 1fr !important;
                 grid-auto-rows: unset !important;
+                max-width: none !important;
+                width: 100% !important;
             }
             body.presentation-mode main.grid-5 {
                 grid-template-columns: repeat(5, 1fr) !important;
@@ -967,8 +969,6 @@
             // Применяем вычисленные значения
             names.forEach(name => {
                 name.style.fontSize = `${nameFontSize}px`;
-                // Жестко фиксируем высоту textarea под 2 строки, чтобы избежать скролла/обрезки
-                name.style.height = `${nameFontSize * 2.4}px`; 
             });
             scores.forEach(score => score.style.fontSize = `${scoreFontSize}px`);
         }
