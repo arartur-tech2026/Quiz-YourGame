@@ -109,6 +109,8 @@
             background-color: var(--bg-page);
             color: var(--text-main);
             height: 100%;
+            width: 100%;
+            overflow-x: hidden; /* жесткий запрет горизонтального скролла */
             display: flex;
             flex-direction: column;
             transition: background 0.3s, color 0.3s;
@@ -130,12 +132,19 @@
             background: var(--header-bg);
             border-bottom: 1px solid var(--header-border);
             color: var(--header-text);
-            padding: 1.5rem 2rem;
+            padding: 1rem;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 1rem;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 10;
+        }
+
+        .header-titles {
+            width: 100%;
+            text-align: center;
+            min-width: 0; /* фикс: разрешает контейнеру сжиматься меньше размера контента */
         }
 
         .header-titles h1 {
@@ -155,10 +164,12 @@
             opacity: 0.9;
             margin-top: 0.2rem;
             width: 100%;
-            min-width: 320px;
+            min-width: 0; /* фикс: предотвращает выталкивание инпута за пределы экрана */
+            text-align: center;
             font-family: var(--font-main);
             transition: border-color 0.2s, opacity 0.2s;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            text-overflow: ellipsis; /* длинный текст будет обрезаться многоточием */
         }
 
         .theme-input:focus {
@@ -257,65 +268,96 @@
         /* Основной контейнер (Сетка команд) */
         main {
             flex: 1;
-            padding: 2rem;
+            padding: 1rem;
             display: grid;
             grid-template-columns: 1fr;
-            grid-auto-rows: minmax(min-content, 1fr); /* Защита от сплющивания */
-            gap: 2rem;
+            gap: 1.5rem;
             overflow-y: auto;
-            min-height: 0;
         }
 
-        /* Переключение на 3/5 колонок для планшетов и ПК */
-        @media (min-width: 1024px) {
+        /* Переключение на 3/5 колонок для планшетов */
+        @media (min-width: 768px) {
+            header {
+                flex-direction: row;
+                padding: 1.5rem 2rem;
+                justify-content: space-between;
+            }
+            .header-titles { width: auto; text-align: left; }
+            .theme-input { min-width: 320px; text-align: left; }
+            .header-controls { flex-wrap: nowrap; width: auto; justify-content: flex-end; }
+            
+            .header-btn, .theme-toggle { padding: 0.8rem 1.6rem; font-size: 1.2rem; }
+            #stopwatchBtn { min-width: 110px; }
+            #teamCountToggle { min-width: 160px; }
+            .theme-toggle { padding: 1rem; }
+            .theme-toggle .icon { width: 28px; height: 28px; }
+            .stopwatch-display { font-size: 1.8rem; }
+
             main {
                 grid-template-columns: repeat(3, 1fr);
                 overflow-y: visible;
+                padding: 1.5rem;
+                gap: 1rem;
             }
             main.grid-5 {
                 grid-template-columns: repeat(5, 1fr);
-                gap: 1rem;
+                gap: 0.5rem;
             }
-            main.grid-5 .team-card {
-                padding: 1.2rem 1rem;
-            }
-            main.grid-5 .score-display {
-                font-size: 3.5rem;
-                margin-bottom: 1.5rem;
-            }
-            main.grid-5 .values-grid {
-                gap: 6px;
-            }
-            main.grid-5 .values-grid button {
-                font-size: 1.1rem;
-                padding: 0.6rem 0;
-            }
-            main.grid-5 .btn-action {
-                padding: 0.8rem;
-                font-size: 1.5rem;
-            }
-            main.grid-5 .team-name {
-                font-size: 1.2rem;
-                margin-bottom: 1rem;
-            }
-            main.grid-5 .btn-reset-action {
-                padding: 0.8rem;
-                font-size: 0.95rem;
-            }
+            
+            .team-card { padding: 1.5rem 1rem; }
+            .score-display { font-size: 3.5rem; margin-bottom: 1.5rem; }
+            .values-grid button { font-size: 1.1rem; padding: 0.8rem 0; }
+            .action-grid { gap: 10px; margin-bottom: 1.5rem; }
+            .btn-action { padding: 1rem; }
+            .btn-action .icon { width: 36px; height: 36px; }
+            .team-name { font-size: 1.3rem; margin-bottom: 1.2rem; }
+
+            main.grid-5 .team-card { padding: 1rem 0.5rem; }
+            main.grid-5 .score-display { font-size: 2.5rem; margin-bottom: 1rem; }
+            main.grid-5 .values-grid { gap: 4px; margin-bottom: 1rem; }
+            main.grid-5 .values-grid button { font-size: 0.9rem; padding: 0.5rem 0; }
+            main.grid-5 .action-grid { gap: 8px; margin-bottom: 1rem; }
+            main.grid-5 .btn-action { padding: 0.6rem; }
+            main.grid-5 .btn-action .icon { width: 28px; height: 28px; }
+            main.grid-5 .team-name { font-size: 1.1rem; margin-bottom: 0.8rem; }
+            main.grid-5 .btn-reset-action { padding: 0.6rem; font-size: 0.85rem; }
         }
 
-        /* Карточка команды */
+        /* Адаптация для больших экранов (iPad 13", ПК) */
+        @media (min-width: 1024px) {
+            main { padding: 2rem; gap: 2rem; }
+            main.grid-5 { gap: 1rem; }
+            
+            .team-card { padding: 2rem; }
+            .score-display { font-size: 5rem; margin-bottom: 2rem; }
+            .values-grid button { font-size: 1.25rem; padding: 1rem 0; }
+            .action-grid { gap: 15px; margin-bottom: 1.5rem; }
+            .btn-action { padding: 1.2rem; }
+            .btn-action .icon { width: 48px; height: 48px; }
+            .team-name { font-size: 1.5rem; margin-bottom: 1.5rem; }
+
+            main.grid-5 .team-card { padding: 1.2rem 1rem; }
+            main.grid-5 .score-display { font-size: 3.5rem; margin-bottom: 1.5rem; }
+            main.grid-5 .values-grid { gap: 6px; }
+            main.grid-5 .values-grid button { font-size: 1.1rem; padding: 0.6rem 0; }
+            main.grid-5 .btn-action { padding: 0.8rem; }
+            main.grid-5 .btn-action .icon { width: 36px; height: 36px; }
+            main.grid-5 .team-name { font-size: 1.2rem; margin-bottom: 1rem; }
+            main.grid-5 .btn-reset-action { padding: 0.8rem; font-size: 0.95rem; }
+        }
+
+        /* Карточка команды (Анодированный металлический лист) */
         .team-card {
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: transform 0.2s, background 0.3s, border-color 0.3s;
             border: 1px solid transparent;
             position: relative;
-            min-height: min-content; /* Защита от сплющивания */
-            overflow: hidden; 
+            overflow: hidden;
+            min-width: 0; /* фикс: предотвращает разрыв сетки на смартфонах при длинных названиях */
         }
 
         .team-card.team-1 {
@@ -540,16 +582,17 @@
 
         /* --- Режим экрана участников (Presentation Mode) --- */
         body.presentation-mode main {
+            display: flex !important;
+            flex-direction: column !important; /* На смартфонах вертикально */
             padding: 0 !important;
             gap: 0 !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            grid-template-rows: 1fr !important;
-            grid-auto-rows: unset !important;
             overflow: hidden !important;
         }
-        
-        body.presentation-mode main.grid-5 {
-            grid-template-columns: repeat(5, 1fr) !important;
+
+        @media (min-width: 768px) {
+            body.presentation-mode main {
+                flex-direction: row !important; /* На планшетах и ПК горизонтально */
+            }
         }
 
         body.presentation-mode .team-card {
@@ -561,6 +604,7 @@
             min-width: 0; 
             min-height: 0; 
             padding: 5% !important; 
+            flex: 1; /* Карточки равномерно делят экран */
         }
 
         body.presentation-mode .team-name {
