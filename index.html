@@ -497,7 +497,27 @@
             border: none;
             box-shadow: none;
             min-width: 0; min-height: 0; 
-            padding: 5% !important; 
+            padding: 2% !important; /* Уменьшен padding для большего пространства текста */
+        }
+
+        body.presentation-mode .team-name {
+            border-bottom: none !important;
+            margin-bottom: 2vh;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            pointer-events: none; 
+            padding: 0 !important; /* Убираем внутренние отступы textarea во избежание обрезки */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-theme="light"] body.presentation-mode .team-1 .team-name { text-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+
+        body.presentation-mode .score-display {
+            margin-bottom: 0;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            white-space: nowrap; 
+            line-height: 1;
         }
 
         body.presentation-mode .team-name {
@@ -869,7 +889,10 @@
             const scores = document.querySelectorAll('.score-display');
             
             if (!document.body.classList.contains('presentation-mode')) {
-                names.forEach(el => el.style.fontSize = '');
+                names.forEach(el => {
+                    el.style.fontSize = '';
+                    el.style.height = '';
+                });
                 scores.forEach(el => el.style.fontSize = '');
                 return;
             }
@@ -877,72 +900,79 @@
             const firstCard = document.querySelector('.team-card');
             if (!firstCard) return;
 
-            const computedStyle = window.getComputedStyle(firstCard);
-            const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-            const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
-            const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
-            const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
-            
-            // Доступная ширина и высота с небольшим запасом (5%)
-            const availableWidth = (firstCard.clientWidth - paddingLeft - paddingRight) * 0.95;
-            const availableHeight = (firstCard.clientHeight - paddingTop - paddingBottom) * 0.95;
+            // Определяем абсолютные размеры карточки
+            const cardWidth = firstCard.clientWidth;
+            const cardHeight = firstCard.clientHeight;
 
-            if (availableWidth <= 0 || availableHeight <= 0) return;
+            // Безопасные зоны (85% от ширины, чтобы не обрезалось по краям)
+            const maxNameWidth = cardWidth * 0.85;
+            const maxScoreWidth = cardWidth * 0.85;
+            
+            // Квоты по высоте: 35% карточки на название, 50% на счет (остальное отступы)
+            const maxNameHeight = cardHeight * 0.35; 
+            const maxScoreHeight = cardHeight * 0.50;
+
+            if (cardWidth <= 0 || cardHeight <= 0) return;
 
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+            const baseSize = 100;
 
-            // --- Расчет для названий команд ---
-            let minNameRatio = Infinity;
-            const baseNameSize = 100;
-            ctx.font = `700 ${baseNameSize}px system-ui, -apple-system, sans-serif`;
+            // --- 1. Расчет для названий команд ---
+            ctx.font = `700 ${baseSize}px system-ui, -apple-system, sans-serif`;
+            let maxNameLineWidthAtBase = 0;
 
             state.teams.slice(0, state.activeTeams).forEach(team => {
                 const lines = team.name.split('\n');
                 lines.forEach(line => {
                     const width = ctx.measureText(line).width;
-                    if (width > 0) {
-                        const ratio = availableWidth / width;
-                        if (ratio < minNameRatio) minNameRatio = ratio;
-                    }
+                    if (width > maxNameLineWidthAtBase) maxNameLineWidthAtBase = width;
                 });
             });
 
-            // --- Расчет для баллов ---
-            let minScoreRatio = Infinity;
-            const baseScoreSize = 100;
-            ctx.font = `900 ${baseScoreSize}px system-ui, -apple-system, sans-serif`;
+            let nameFontSize = baseSize;
+            if (maxNameLineWidthAtBase > 0) {
+                // Размер, чтобы влезть по ширине
+                const sizeForWidth = (maxNameWidth / maxNameLineWidthAtBase) * baseSize;
+                // Размер, чтобы влезть по высоте (2 строки с line-height 1.2 = 2.4em)
+                const sizeForHeight = maxNameHeight / 2.4; 
+                // Берем наименьший из двух, чтобы гарантированно влезть и по ширине, и по высоте
+                nameFontSize = Math.min(sizeForWidth, sizeForHeight);
+            }
+
+            // --- 2. Расчет для баллов ---
+            ctx.font = `900 ${baseSize}px system-ui, -apple-system, sans-serif`;
+            let maxScoreWidthAtBase = 0;
 
             state.teams.slice(0, state.activeTeams).forEach(team => {
                 const text = team.score.toString();
                 const width = ctx.measureText(text).width;
-                if (width > 0) {
-                    const ratio = availableWidth / width;
-                    if (ratio < minScoreRatio) minScoreRatio = ratio;
-                }
+                if (width > maxScoreWidthAtBase) maxScoreWidthAtBase = width;
             });
 
-            let finalNameSize = baseNameSize * minNameRatio;
-            let finalScoreSize = baseScoreSize * minScoreRatio;
-
-            // Защита от излишнего увеличения на очень широких экранах
-            const maxNamePx = availableWidth * 0.4; 
-            const maxScorePx = availableWidth * 0.8;
-
-            if (!isFinite(finalNameSize) || finalNameSize > maxNamePx) finalNameSize = maxNamePx;
-            if (!isFinite(finalScoreSize) || finalScoreSize > maxScorePx) finalScoreSize = maxScorePx;
-
-            // Проверка по высоте: суммарная высота названия (2 строки) + баллы + отступ не должна превышать высоту карточки
-            const estimatedHeight = (finalNameSize * 1.2 * 2) + finalScoreSize + (availableHeight * 0.1); 
-            
-            if (estimatedHeight > availableHeight) {
-                const scale = availableHeight / estimatedHeight;
-                finalNameSize *= scale;
-                finalScoreSize *= scale;
+            let scoreFontSize = baseSize;
+            if (maxScoreWidthAtBase > 0) {
+                // Размер, чтобы влезть по ширине
+                const sizeForWidth = (maxScoreWidth / maxScoreWidthAtBase) * baseSize;
+                // Размер, чтобы влезть по высоте (1 строка)
+                const sizeForHeight = maxScoreHeight; 
+                scoreFontSize = Math.min(sizeForWidth, sizeForHeight);
             }
 
-            names.forEach(name => name.style.fontSize = `${finalNameSize}px`);
-            scores.forEach(score => score.style.fontSize = `${finalScoreSize}px`);
+            // Устанавливаем разумные абсолютные лимиты для больших экранов
+            const absoluteMaxNameSize = Math.min(cardWidth * 0.15, 120); 
+            const absoluteMaxScoreSize = Math.min(cardWidth * 0.35, 250); 
+
+            nameFontSize = Math.min(nameFontSize, absoluteMaxNameSize);
+            scoreFontSize = Math.min(scoreFontSize, absoluteMaxScoreSize);
+
+            // Применяем вычисленные значения
+            names.forEach(name => {
+                name.style.fontSize = `${nameFontSize}px`;
+                // Жестко фиксируем высоту textarea под 2 строки, чтобы избежать скролла/обрезки
+                name.style.height = `${nameFontSize * 2.4}px`; 
+            });
+            scores.forEach(score => score.style.fontSize = `${scoreFontSize}px`);
         }
 
         // Запуск
