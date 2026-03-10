@@ -586,7 +586,7 @@
     <header>
         <div class="header-titles">
             <h1>Своя игра</h1>
-            <input type="text" class="theme-input" value="Тема: служение Отечеству: Герои России" aria-label="редактируемая тема игры">
+            <input type="text" id="gameTitleInput" class="theme-input" value="Тема: служение Отечеству: Герои России" oninput="updateGameTitle(this.value)" aria-label="редактируемая тема игры">
         </div>
         <div class="header-controls">
             <div class="stopwatch-container">
@@ -612,6 +612,7 @@
         const state = {
             theme: 'light',
             activeTeams: 3,
+            gameTitle: 'Тема: служение Отечеству: Герои России',
             teams: [
                 { id: 1, name: 'Команда\nБелых', score: 0, selectedValue: null, colorClass: 'team-1' },
                 { id: 2, name: 'Команда\nСиних', score: 0, selectedValue: null, colorClass: 'team-2' },
@@ -627,6 +628,47 @@
                 intervalId: null
             }
         };
+
+        // Система сохранения данных в localStorage
+        const LOCAL_STORAGE_KEY = 'svoya_igra_state';
+
+        function saveState() {
+            const stateToSave = {
+                theme: state.theme,
+                activeTeams: state.activeTeams,
+                gameTitle: state.gameTitle,
+                teams: state.teams.map(t => ({
+                    id: t.id,
+                    name: t.name,
+                    score: t.score,
+                    selectedValue: t.selectedValue
+                }))
+            };
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stateToSave));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.theme) state.theme = parsed.theme;
+                    if (parsed.activeTeams) state.activeTeams = parsed.activeTeams;
+                    if (parsed.gameTitle) state.gameTitle = parsed.gameTitle;
+                    if (parsed.teams) {
+                        parsed.teams.forEach((savedTeam, index) => {
+                            if (state.teams[index]) {
+                                state.teams[index].name = savedTeam.name;
+                                state.teams[index].score = savedTeam.score;
+                                state.teams[index].selectedValue = savedTeam.selectedValue;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('Ошибка загрузки сохранений', e);
+                }
+            }
+        }
 
         // Аудиосистема
         let audioCtx = null;
@@ -668,10 +710,19 @@
         const presentationToggle = document.getElementById('presentationToggle');
         const themeIcon = document.getElementById('themeIcon');
         const teamCountToggle = document.getElementById('teamCountToggle');
+        const gameTitleInput = document.getElementById('gameTitleInput');
         const body = document.body;
 
         // Инициализация
         function init() {
+            loadState(); // Восстанавливаем данные перед отрисовкой
+
+            // Восстановление UI элементов из состояния
+            gameTitleInput.value = state.gameTitle;
+            body.setAttribute('data-theme', state.theme);
+            themeIcon.setAttribute('href', state.theme === 'light' ? '#icon-moon' : '#icon-sun');
+            teamCountToggle.innerText = state.activeTeams === 3 ? '5 команд' : '3 команды';
+
             renderDashboard();
             setupThemeToggle();
             setupPresentationToggle();
@@ -736,6 +787,7 @@
             team.selectedValue = team.selectedValue === value ? null : value;
             
             updateCardUI(teamId);
+            saveState(); // Сохраняем состояние
         };
 
         // Логика: изменение счета (+ / -)
@@ -764,6 +816,7 @@
             team.selectedValue = null;
             
             updateCardUI(teamId);
+            saveState(); // Сохраняем состояние
             requestAnimationFrame(() => adjustPresentationFonts());
         };
 
@@ -774,6 +827,7 @@
             team.score = 0;
             team.selectedValue = null;
             updateCardUI(teamId);
+            saveState(); // Сохраняем состояние
             requestAnimationFrame(() => adjustPresentationFonts());
         };
 
@@ -781,7 +835,14 @@
         window.updateTeamName = function(teamId, newName) {
             const team = state.teams.find(t => t.id === teamId);
             team.name = newName;
+            saveState(); // Сохраняем состояние
             requestAnimationFrame(() => adjustPresentationFonts());
+        };
+
+        // Обновление названия игры
+        window.updateGameTitle = function(newTitle) {
+            state.gameTitle = newTitle;
+            saveState(); // Сохраняем состояние
         };
 
         // Логика секундомера
@@ -856,6 +917,7 @@
                     body.setAttribute('data-theme', 'light');
                     themeIcon.setAttribute('href', '#icon-moon');
                 }
+                saveState(); // Сохраняем состояние
             });
         }
 
@@ -879,6 +941,7 @@
                     state.activeTeams = 3;
                     teamCountToggle.innerText = '5 команд';
                 }
+                saveState(); // Сохраняем состояние
                 renderDashboard();
             });
         }
