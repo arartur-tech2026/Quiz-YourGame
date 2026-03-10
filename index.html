@@ -96,6 +96,7 @@
             --btn-metal-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 1px 1px 1px rgba(255,255,255,0.1), inset -1px -1px 1px rgba(0,0,0,0.4);
         }
 
+        /* ---------- БАЗОВЫЕ НАСТРОЙКИ ---------- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -103,52 +104,42 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* SVG иконки инлайн */
+        .svg-defs { display: none; }
+        .icon { width: 24px; height: 24px; fill: currentColor; }
+
+        /* ---------- ДВИЖОК 1: МОБИЛЬНЫЙ (Вертикальный нативный скролл) ---------- */
         body, html {
             font-family: var(--font-main);
             background: var(--bg-pattern), var(--bg-page-gradient);
             background-color: var(--bg-page);
             color: var(--text-main);
-            height: 100%;
-            width: 100%;
-            overflow-x: hidden; /* жесткий запрет горизонтального скролла */
+            min-height: 100vh;
+            height: auto; /* Разрешаем нативный скролл */
             display: flex;
             flex-direction: column;
             transition: background 0.3s, color 0.3s;
         }
 
-        /* SVG иконки инлайн */
-        .svg-defs {
-            display: none;
-        }
-
-        .icon {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
-
-        /* Шапка */
         header {
             background: var(--header-bg);
             border-bottom: 1px solid var(--header-border);
             color: var(--header-text);
             padding: 1rem;
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Шапка выстраивается в столбик */
             gap: 1rem;
-            align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 10;
         }
 
         .header-titles {
-            width: 100%;
             text-align: center;
-            min-width: 0; /* фикс: разрешает контейнеру сжиматься меньше размера контента */
+            width: 100%;
         }
 
         .header-titles h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -160,16 +151,14 @@
             border: none;
             border-bottom: 1px dashed rgba(255,255,255,0.4);
             color: inherit;
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
-            margin-top: 0.2rem;
-            width: 100%;
-            min-width: 0; /* фикс: предотвращает выталкивание инпута за пределы экрана */
+            margin-top: 0.5rem;
+            width: 100%; /* Занимает всю ширину на мобилках */
             text-align: center;
             font-family: var(--font-main);
             transition: border-color 0.2s, opacity 0.2s;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-            text-overflow: ellipsis; /* длинный текст будет обрезаться многоточием */
         }
 
         .theme-input:focus {
@@ -180,8 +169,11 @@
 
         .header-controls {
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            flex-wrap: wrap; /* Кнопки переносятся, если не влезают */
+            justify-content: center;
+            align-items: stretch;
+            gap: 0.5rem;
+            width: 100%;
         }
 
         .header-btn, .theme-toggle {
@@ -189,49 +181,36 @@
             border: 1px solid rgba(255,255,255,0.2);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 1px 1px 1px rgba(255,255,255,0.2);
             color: white;
-            padding: 0.8rem 1.6rem;
-            border-radius: 20px;
+            border-radius: 16px;
             font-weight: 600;
-            font-size: 1.2rem;
             cursor: pointer;
             font-family: var(--font-main);
             transition: all 0.2s;
         }
 
-        /* Фиксированная ширина для кнопок в шапке */
-        #stopwatchBtn {
-            min-width: 110px;
-            text-align: center;
-        }
-
-        #teamCountToggle {
-            min-width: 160px;
-            text-align: center;
+        .header-btn {
+            flex: 1 1 auto; /* Растягиваются на мобилках */
+            padding: 0.6rem 1rem;
+            font-size: 1.1rem;
         }
 
         .theme-toggle {
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex: 0 0 auto;
         }
 
         .theme-toggle .icon {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
         }
 
-        .header-btn:hover, .theme-toggle:hover {
-            background: linear-gradient(160deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
-        }
+        .header-btn:hover, .theme-toggle:hover { background: linear-gradient(160deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%); }
+        .header-btn:active, .theme-toggle:active { box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3); transform: translateY(1px); }
 
-        .header-btn:active, .theme-toggle:active {
-            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.3);
-            transform: translateY(1px);
-        }
-
-        /* Глобальный эффект синего неонового клика для всех кнопок */
         button:active {
             box-shadow: 0 0 15px 3px rgba(0, 150, 255, 0.8), inset 0 0 8px rgba(0, 150, 255, 0.5) !important;
             border-color: #0096ff !important;
@@ -248,16 +227,18 @@
         .stopwatch-container {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            justify-content: space-between;
+            gap: 0.5rem;
             background: rgba(0, 0, 0, 0.3);
             padding: 0.3rem 0.3rem 0.3rem 1rem;
-            border-radius: 25px;
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: inset 1px 1px 4px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.1);
+            width: 100%; /* В мобильной версии секундомер на всю ширину */
         }
 
         .stopwatch-display {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             letter-spacing: 1px;
@@ -265,129 +246,41 @@
             text-shadow: 0 0 5px rgba(255,255,255,0.3);
         }
 
-        /* Основной контейнер (Сетка команд) */
         main {
             flex: 1;
             padding: 1rem;
-            display: grid;
-            grid-template-columns: 1fr;
+            display: flex;
+            flex-direction: column; /* Колонкой на смартфонах */
             gap: 1.5rem;
-            overflow-y: auto;
+            overflow: visible; /* Контент удлиняет страницу, создавая нативный скролл */
         }
 
-        /* Переключение на 3/5 колонок для планшетов */
-        @media (min-width: 768px) {
-            header {
-                flex-direction: row;
-                padding: 1.5rem 2rem;
-                justify-content: space-between;
-            }
-            .header-titles { width: auto; text-align: left; }
-            .theme-input { min-width: 320px; text-align: left; }
-            .header-controls { flex-wrap: nowrap; width: auto; justify-content: flex-end; }
-            
-            .header-btn, .theme-toggle { padding: 0.8rem 1.6rem; font-size: 1.2rem; }
-            #stopwatchBtn { min-width: 110px; }
-            #teamCountToggle { min-width: 160px; }
-            .theme-toggle { padding: 1rem; }
-            .theme-toggle .icon { width: 28px; height: 28px; }
-            .stopwatch-display { font-size: 1.8rem; }
-
-            main {
-                grid-template-columns: repeat(3, 1fr);
-                overflow-y: visible;
-                padding: 1.5rem;
-                gap: 1rem;
-            }
-            main.grid-5 {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 0.5rem;
-            }
-            
-            .team-card { padding: 1.5rem 1rem; }
-            .score-display { font-size: 3.5rem; margin-bottom: 1.5rem; }
-            .values-grid button { font-size: 1.1rem; padding: 0.8rem 0; }
-            .action-grid { gap: 10px; margin-bottom: 1.5rem; }
-            .btn-action { padding: 1rem; }
-            .btn-action .icon { width: 36px; height: 36px; }
-            .team-name { font-size: 1.3rem; margin-bottom: 1.2rem; }
-
-            main.grid-5 .team-card { padding: 1rem 0.5rem; }
-            main.grid-5 .score-display { font-size: 2.5rem; margin-bottom: 1rem; }
-            main.grid-5 .values-grid { gap: 4px; margin-bottom: 1rem; }
-            main.grid-5 .values-grid button { font-size: 0.9rem; padding: 0.5rem 0; }
-            main.grid-5 .action-grid { gap: 8px; margin-bottom: 1rem; }
-            main.grid-5 .btn-action { padding: 0.6rem; }
-            main.grid-5 .btn-action .icon { width: 28px; height: 28px; }
-            main.grid-5 .team-name { font-size: 1.1rem; margin-bottom: 0.8rem; }
-            main.grid-5 .btn-reset-action { padding: 0.6rem; font-size: 0.85rem; }
-        }
-
-        /* Адаптация для больших экранов (iPad 13", ПК) */
-        @media (min-width: 1024px) {
-            main { padding: 2rem; gap: 2rem; }
-            main.grid-5 { gap: 1rem; }
-            
-            .team-card { padding: 2rem; }
-            .score-display { font-size: 5rem; margin-bottom: 2rem; }
-            .values-grid button { font-size: 1.25rem; padding: 1rem 0; }
-            .action-grid { gap: 15px; margin-bottom: 1.5rem; }
-            .btn-action { padding: 1.2rem; }
-            .btn-action .icon { width: 48px; height: 48px; }
-            .team-name { font-size: 1.5rem; margin-bottom: 1.5rem; }
-
-            main.grid-5 .team-card { padding: 1.2rem 1rem; }
-            main.grid-5 .score-display { font-size: 3.5rem; margin-bottom: 1.5rem; }
-            main.grid-5 .values-grid { gap: 6px; }
-            main.grid-5 .values-grid button { font-size: 1.1rem; padding: 0.6rem 0; }
-            main.grid-5 .btn-action { padding: 0.8rem; }
-            main.grid-5 .btn-action .icon { width: 36px; height: 36px; }
-            main.grid-5 .team-name { font-size: 1.2rem; margin-bottom: 1rem; }
-            main.grid-5 .btn-reset-action { padding: 0.8rem; font-size: 0.95rem; }
-        }
-
-        /* Карточка команды (Анодированный металлический лист) */
+        /* Карточка команды */
         .team-card {
             border-radius: 20px;
-            padding: 1.5rem 1rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: transform 0.2s, background 0.3s, border-color 0.3s;
             border: 1px solid transparent;
             position: relative;
-            overflow: hidden;
-            min-width: 0; /* фикс: предотвращает разрыв сетки на смартфонах при длинных названиях */
+            height: auto; /* Растягивается под контент */
         }
 
-        .team-card.team-1 {
-            background: var(--team1-bg); color: var(--team1-text);
-            border-color: var(--team1-border); box-shadow: var(--team1-shadow);
-        }
-        .team-card.team-2 {
-            background: var(--team2-bg); color: var(--team2-text);
-            border-color: var(--team2-border); box-shadow: var(--team2-shadow);
-        }
-        .team-card.team-3 {
-            background: var(--team3-bg); color: var(--team3-text);
-            border-color: var(--team3-border); box-shadow: var(--team3-shadow);
-        }
-        .team-card.team-4 {
-            background: var(--team4-bg); color: var(--team4-text);
-            border-color: var(--team4-border); box-shadow: var(--team4-shadow);
-        }
-        .team-card.team-5 {
-            background: var(--team5-bg); color: var(--team5-text);
-            border-color: var(--team5-border); box-shadow: var(--team5-shadow);
-        }
+        .team-card.team-1 { background: var(--team1-bg); color: var(--team1-text); border-color: var(--team1-border); box-shadow: var(--team1-shadow); }
+        .team-card.team-2 { background: var(--team2-bg); color: var(--team2-text); border-color: var(--team2-border); box-shadow: var(--team2-shadow); }
+        .team-card.team-3 { background: var(--team3-bg); color: var(--team3-text); border-color: var(--team3-border); box-shadow: var(--team3-shadow); }
+        .team-card.team-4 { background: var(--team4-bg); color: var(--team4-text); border-color: var(--team4-border); box-shadow: var(--team4-shadow); }
+        .team-card.team-5 { background: var(--team5-bg); color: var(--team5-text); border-color: var(--team5-border); box-shadow: var(--team5-shadow); }
 
-        /* Поле для названия команды (в две строки) */
+        /* Поле для названия команды */
         .team-name {
             background: transparent;
             border: none;
             border-bottom: 2px solid rgba(255, 255, 255, 0.4);
             color: inherit;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             text-align: center;
             width: 100%;
@@ -401,56 +294,34 @@
             line-height: 1.2;
         }
 
-        .team-name:focus {
-            outline: none;
-            border-bottom: 2px solid #ffffff;
-        }
-
-        /* Подчеркивание для 1-й команды на белом фоне */
-        [data-theme="light"] .team-1 .team-name {
-            border-bottom: 2px solid rgba(0, 0, 0, 0.2);
-            text-shadow: none;
-        }
-
-        [data-theme="light"] .team-1 .team-name:focus {
-            border-bottom: 2px solid #000000;
-        }
+        .team-name:focus { border-bottom: 2px solid #ffffff; outline: none; }
+        [data-theme="light"] .team-1 .team-name { border-bottom: 2px solid rgba(0, 0, 0, 0.2); text-shadow: none; }
+        [data-theme="light"] .team-1 .team-name:focus { border-bottom: 2px solid #000000; }
 
         /* Табло счета */
         .score-display {
-            font-size: 5rem;
+            font-size: 4rem;
             font-weight: 900;
             line-height: 1;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             font-variant-numeric: tabular-nums;
             transition: transform 0.1s;
             text-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 -1px 1px rgba(255,255,255,0.2);
         }
 
-        [data-theme="light"] .team-1 .score-display {
-            text-shadow: 0 2px 4px rgba(0,0,0,0.15), 0 -1px 1px #ffffff;
-        }
+        [data-theme="light"] .team-1 .score-display { text-shadow: 0 2px 4px rgba(0,0,0,0.15), 0 -1px 1px #ffffff; }
 
         .score-display.pulse-up { animation: pulseUp 0.3s ease-out; }
         .score-display.pulse-down { animation: pulseDown 0.3s ease-out; }
 
-        @keyframes pulseUp {
-            0% { transform: scale(1); color: var(--btn-plus); }
-            50% { transform: scale(1.1); color: var(--btn-plus); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes pulseDown {
-            0% { transform: scale(1); color: var(--btn-minus); }
-            50% { transform: scale(0.9); color: var(--btn-minus); }
-            100% { transform: scale(1); }
-        }
+        @keyframes pulseUp { 0% { transform: scale(1); color: var(--btn-plus); } 50% { transform: scale(1.1); color: var(--btn-plus); } 100% { transform: scale(1); } }
+        @keyframes pulseDown { 0% { transform: scale(1); color: var(--btn-minus); } 50% { transform: scale(0.9); color: var(--btn-minus); } 100% { transform: scale(1); } }
 
         /* Калькулятор: номиналы баллов */
         .values-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             width: 100%;
             margin-bottom: 1.5rem;
         }
@@ -460,8 +331,8 @@
             color: inherit;
             border: 1px solid var(--btn-metal-border);
             border-radius: 12px;
-            padding: 1rem 0;
-            font-size: 1.25rem;
+            padding: 0.8rem 0;
+            font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -476,135 +347,157 @@
             text-shadow: none;
         }
 
-        .values-grid button:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.1);
-        }
-
-        .values-grid button:active {
-            transform: translateY(1px);
-            box-shadow: var(--btn-metal-active-shadow);
-        }
-
+        .values-grid button:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .values-grid button:active { transform: translateY(1px); box-shadow: var(--btn-metal-active-shadow); }
         .values-grid button.selected {
-            background: var(--btn-metal-active-bg);
-            color: var(--btn-val-active-text);
-            border-color: transparent;
-            box-shadow: var(--btn-metal-active-shadow);
-            transform: translateY(2px);
-            text-shadow: none;
+            background: var(--btn-metal-active-bg); color: var(--btn-val-active-text);
+            border-color: transparent; box-shadow: var(--btn-metal-active-shadow);
+            transform: translateY(2px); text-shadow: none;
         }
 
         /* Кнопки действий (+, -) */
         .action-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             width: 100%;
             margin-bottom: 1.5rem;
         }
 
         .btn-action {
             border-radius: 16px;
-            padding: 1.2rem;
-            font-size: 2rem;
+            padding: 1rem;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.2s;
-        }
-
-        .btn-action .icon {
-            width: 48px;
-            height: 48px;
-            stroke: currentColor;
-            stroke-width: 2px;
-        }
-
-        .btn-minus-action, .btn-plus-action {
             background: linear-gradient(160deg, #ffffff 0%, #e2e8f0 100%);
             color: #000000;
             border: 2px solid #ffffff;
             box-shadow: 0 6px 12px rgba(0,0,0,0.2), inset 1px 1px 2px #ffffff, inset -1px -1px 2px rgba(0,0,0,0.1);
         }
 
-        [data-theme="light"] .team-1 .btn-minus-action,
-        [data-theme="light"] .team-1 .btn-plus-action {
-            border-color: #000000;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.25), inset 1px 1px 2px #ffffff, inset -1px -1px 2px rgba(0,0,0,0.1);
-        }
-
-        .btn-action:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .btn-minus-action:disabled, .btn-plus-action:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-            background: rgba(255,255,255,0.5);
-        }
+        .btn-action .icon { width: 36px; height: 36px; stroke: currentColor; stroke-width: 2px; }
+        [data-theme="light"] .team-1 .btn-action { border-color: #000000; }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.25), inset 1px 1px 2px #ffffff, inset -1px -1px 2px rgba(0,0,0,0.1); }
+        .btn-action:active { transform: translateY(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 2px 2px 4px rgba(0,0,0,0.1); }
+        .btn-minus-action:disabled, .btn-plus-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; background: rgba(255,255,255,0.5); }
 
         /* Кнопка сброса */
         .btn-reset-action {
-            width: 100%;
-            background: var(--btn-metal-bg);
-            color: inherit;
-            border: 2px solid #ffffff;
-            border-radius: 12px;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            box-shadow: var(--btn-metal-shadow);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            width: 100%; background: var(--btn-metal-bg); color: inherit; border: 2px solid #ffffff;
+            border-radius: 12px; padding: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.2s;
+            box-shadow: var(--btn-metal-shadow); text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
 
-        .btn-reset-action:hover {
-            background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%);
+        .btn-reset-action:hover { background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%); }
+        .btn-reset-action:active { box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); }
+        [data-theme="light"] .team-1 .btn-reset-action {
+            border-color: #000000; text-shadow: none; background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 1px 1px 1px #ffffff, inset -1px -1px 1px rgba(0,0,0,0.1);
+        }
+        [data-theme="light"] .team-1 .btn-reset-action:hover { background: linear-gradient(160deg, #f8fafc 0%, #e2e8f0 100%); }
+
+
+        /* ---------- ДВИЖОК 2: ДЕСКТОПНЫЙ И ПЛАНШЕТНЫЙ (Горизонтальный интерфейс приложения) ---------- */
+        @media (min-width: 1024px), (orientation: landscape) and (min-width: 768px) {
+            body {
+                height: 100vh; /* Блокируем скролл всего экрана, создавая эффект приложения */
+                overflow: hidden; 
+            }
+
+            header {
+                flex-direction: row; /* Шапка в одну линию */
+                justify-content: space-between;
+                padding: 1.5rem 2rem;
+            }
+
+            .header-titles { width: auto; text-align: left; }
+            .header-titles h1 { font-size: 2rem; text-align: left; }
+            .theme-input { text-align: left; min-width: 320px; margin-top: 0.2rem; }
+
+            .header-controls {
+                width: auto;
+                flex-wrap: nowrap;
+                gap: 1rem;
+            }
+
+            .stopwatch-container { width: auto; padding: 0.3rem 0.3rem 0.3rem 1rem; border-radius: 25px; }
+            .stopwatch-display { font-size: 1.8rem; }
+            
+            #stopwatchBtn { flex: 0 0 auto; min-width: 110px; padding: 0.8rem 1.6rem; font-size: 1.2rem; }
+            #teamCountToggle { flex: 0 0 auto; min-width: 160px; padding: 0.8rem 1.6rem; font-size: 1.2rem; }
+            .theme-toggle { padding: 1rem; }
+            .theme-toggle .icon { width: 28px; height: 28px; }
+
+            main {
+                flex: 1;
+                display: grid; /* Включаем сеточную структуру */
+                grid-template-columns: repeat(3, 1fr);
+                grid-auto-rows: minmax(min-content, 1fr);
+                padding: 2rem;
+                gap: 2rem;
+                overflow-y: auto; /* Скроллится только зона с командами */
+            }
+            
+            main.grid-5 {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 1rem;
+            }
+            
+            .team-card { padding: 2rem; min-height: 0; }
+            main.grid-5 .team-card { padding: 1.2rem 1rem; }
+            
+            .team-name { font-size: 1.5rem; margin-bottom: 2rem; }
+            main.grid-5 .team-name { font-size: 1.2rem; margin-bottom: 1rem; }
+            
+            .score-display { font-size: 5rem; margin-bottom: 2rem; }
+            main.grid-5 .score-display { font-size: 3.5rem; margin-bottom: 1.5rem; }
+            
+            .values-grid { gap: 10px; }
+            main.grid-5 .values-grid { gap: 6px; }
+            .values-grid button { padding: 1rem 0; font-size: 1.25rem; }
+            main.grid-5 .values-grid button { padding: 0.6rem 0; font-size: 1.1rem; }
+            
+            .action-grid { gap: 15px; }
+            main.grid-5 .action-grid { gap: 10px; }
+            
+            .btn-action { padding: 1.2rem; }
+            main.grid-5 .btn-action { padding: 0.8rem; }
+            .btn-action .icon { width: 48px; height: 48px; }
+            main.grid-5 .btn-action .icon { width: 36px; height: 36px; }
+            
+            .btn-reset-action { padding: 1rem; font-size: 1.1rem; }
+            main.grid-5 .btn-reset-action { padding: 0.8rem; font-size: 0.95rem; }
         }
 
-        .btn-reset-action:active {
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
-        }
 
-        /* --- Режим экрана участников (Presentation Mode) --- */
-        body.presentation-mode main {
-            display: flex !important;
-            flex-direction: column !important; /* На смартфонах вертикально */
-            padding: 0 !important;
-            gap: 0 !important;
+        /* ---------- РЕЖИМ ЭКРАНА УЧАСТНИКОВ (Presentation Mode) ---------- */
+        /* По умолчанию на смартфонах это вертикальная стопка на весь экран */
+        body.presentation-mode {
+            height: 100vh !important;
             overflow: hidden !important;
         }
 
-        @media (min-width: 768px) {
-            body.presentation-mode main {
-                flex-direction: row !important; /* На планшетах и ПК горизонтально */
-            }
+        body.presentation-mode main {
+            padding: 0 !important;
+            gap: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
         }
 
         body.presentation-mode .team-card {
+            flex: 1; /* Одинаковая высота на мобилках */
             border-radius: 0;
             justify-content: center;
             align-items: center;
             border: none;
             box-shadow: none;
-            min-width: 0; 
-            min-height: 0; 
+            min-width: 0; min-height: 0; 
             padding: 5% !important; 
-            flex: 1; /* Карточки равномерно делят экран */
         }
 
         body.presentation-mode .team-name {
@@ -615,9 +508,7 @@
             height: 2.4em; 
         }
 
-        [data-theme="light"] body.presentation-mode .team-1 .team-name {
-            text-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
+        [data-theme="light"] body.presentation-mode .team-1 .team-name { text-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
         body.presentation-mode .score-display {
             margin-bottom: 0;
@@ -625,14 +516,23 @@
             white-space: nowrap; 
         }
 
-        [data-theme="light"] body.presentation-mode .team-1 .score-display {
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        [data-theme="light"] body.presentation-mode .team-1 .score-display { text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
         body.presentation-mode .values-grid,
         body.presentation-mode .action-grid,
-        body.presentation-mode .btn-reset-action {
-            display: none;
+        body.presentation-mode .btn-reset-action { display: none; }
+
+        /* В горизонтальном режиме (ПК/Планшеты) меняем стопку на вертикальные колонки */
+        @media (min-width: 1024px), (orientation: landscape) and (min-width: 768px) {
+            body.presentation-mode main {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-rows: 1fr !important;
+                grid-auto-rows: unset !important;
+            }
+            body.presentation-mode main.grid-5 {
+                grid-template-columns: repeat(5, 1fr) !important;
+            }
         }
 
     </style>
